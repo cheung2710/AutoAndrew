@@ -1,3 +1,5 @@
+## TODO: add zero-width spaces in front of messages to prevent interference with other bots (https://github.com/meew0/discord-bot-best-practices)
+## add database with customizations (https://www.youtube.com/watch?v=SPTfmiYiuok)
 import discord
 import os
 import requests
@@ -10,28 +12,13 @@ from keep_alive import keep_alive
 client = discord.Client()
 
 
-bad_words = ['fuck', 'shit', 'darn']
-
-
-def get_quote():
-  """Returns an inspirational quote from zenquotes.io."""
-  response = requests.get('https://zenquotes.io/api/random')
-  json_data = json.loads(response.text)
-  quote = json_data[0]['q'] + "\n--" + json_data[0]['a']
-  return quote
-
-
-def roast(message):
-  """Returns an insult with a name attached from insult.mattbas.org."""
-  insult = requests.get('https://insult.mattbas.org/api/insult').text
-  if message == '': return insult + "."
-
-  name = ''
-  for char in message:
-    if char != ' ':
-      name += char
-  insult = name.capitalize() + ", you " + insult[4:]
-  return insult + "."
+bad_words = ['fuck', 'shit', 'bitch']
+async def check_bad_words(message):
+  for word in bad_words:
+      if word in message.content:
+        author = str(message.author)
+        author = author[:len(author) - 5]
+        await message.channel.send(author + ", watch your fucking language!")
 
 
 async def get_inspirobot(message):
@@ -46,6 +33,31 @@ async def get_inspirobot(message):
       await message.channel.send(file = discord.File(data, 'inspirobot_image.png'))
 
 
+def get_quote():
+  """Returns an inspirational quote from zenquotes.io."""
+  response = requests.get('https://zenquotes.io/api/random')
+  json_data = json.loads(response.text)
+  quote = json_data[0]['q'] + "\n--" + json_data[0]['a']
+  return quote
+
+
+def roast(message):
+  """Returns an insult with a name attached from insult.mattbas.org."""
+  insult = requests.get('https://insult.mattbas.org/api/insult').text
+  if message == '': 
+    return insult + "."
+  name = ''
+  for char in message:
+    if char != ' ':
+      name += char
+  insult = name.capitalize() + ", you " + insult[4:]
+  return insult + "."
+
+
+def say(message, s):
+  return message.channel.send(s)
+
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
@@ -54,17 +66,18 @@ async def on_ready():
 @client.event
 async def on_message(message):
   """All of the bot's responses to message events."""
-  if message.author == client.user:
-      return
+  ## ignore all other bots' messages
+  if message.author.bot:
+    return
 
-  for word in bad_words:
-    if word in message.content:
-      author = str(message.author)
-      author = author[:len(author) - 5]
-      await message.channel.send(author + ", watch your fucking language!")
+  await check_bad_words(message)
 
   if message.content.startswith('a!hello'):
     await message.channel.send('Hello!')
+
+  elif message.content.startswith('a!say'):
+    if len(message.content) > 5:
+      await say(message, message.content[5:])
 
   elif message.content.startswith('a!quote'):
     await message.channel.send(get_quote())
