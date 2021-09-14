@@ -1,9 +1,11 @@
 ## TODO: add zero-width spaces in front of messages to prevent interference with other bots (https://github.com/meew0/discord-bot-best-practices)
 ## add database with customizations (https://www.youtube.com/watch?v=SPTfmiYiuok)
+## make help() more helpful (DM)
 import discord
 import os
 import requests
 import json
+import random
 import io
 import aiohttp
 from keep_alive import keep_alive
@@ -13,7 +15,11 @@ client = discord.Client()
 
 
 bad_words = ['fuck', 'shit', 'bitch']
+greetings = ['hello', 'hi', 'greetings', 'hey']
+
+
 async def check_bad_words(message):
+  """Sends a message if anyone says a word in the bad_words[] list."""
   for word in bad_words:
       if word in message.content:
         author = str(message.author)
@@ -41,6 +47,10 @@ def get_quote():
   return quote
 
 
+def get_help():
+  return "try these commands:\na!help \na!hello \na!quote \na!say \na!shout \na!inspire \na!roast \nMore features coming soon!"
+
+
 def roast(message):
   """Returns an insult with a name attached from insult.mattbas.org."""
   insult = requests.get('https://insult.mattbas.org/api/insult').text
@@ -58,9 +68,14 @@ def say(message, s):
   return message.channel.send(s)
 
 
+def shout(message, s):
+  return message.channel.send(s.upper())
+
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+    await client.change_presence(status = discord.Status.online, activity = discord.Game("a!help"))
 
 
 @client.event
@@ -73,18 +88,28 @@ async def on_message(message):
   await check_bad_words(message)
 
   if message.content.startswith('a!hello'):
-    await message.channel.send('Hello!')
+    author = str(message.author)
+    author = author[:len(author) - 5]
+    greeting = random.choice(greetings).capitalize()
+    await message.channel.send(greeting + ', ' + author + '!')
+
+  elif message.content.startswith('a!help'):
+    await message.channel.send(get_help())
 
   elif message.content.startswith('a!say'):
     if len(message.content) > 5:
       await say(message, message.content[5:])
 
+  elif message.content.startswith('a!shout'):
+    if len(message.content) > 7:
+      await shout(message, message.content[7:])
+
   elif message.content.startswith('a!quote'):
     await message.channel.send(get_quote())
 
   elif message.content.startswith('a!roast'):
-    if len(message.content) > 6:
-      insult = roast(message.content[6:])
+    if len(message.content) > 7:
+      insult = roast(message.content[7:])
     else:
       insult = roast('')
     await message.channel.send(insult)
