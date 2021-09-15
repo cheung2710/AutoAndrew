@@ -16,13 +16,17 @@ client = discord.Client()
 bad_words = ['fuck', 'shit', 'bitch']
 greetings = ['hello', 'hi', 'greetings', 'hey', 'yo']
 
+
+def bad_anal_joke(message, name):
+  return message.channel.send("I'm flattered, " + name + ", but I'll have to decline.")
+
+
 async def check_bad_words(message):
   """Sends a message if anyone says a word in the bad_words[] list."""
   for word in bad_words:
       if word in message.content:
-        author = str(message.author)
-        author = author[:len(author) - 5]
-        await message.channel.send(author + ", watch your fucking language!")
+        my_author = get_author(message)
+        await message.channel.send(my_author + ", watch your fucking language!")
 
 
 async def get_inspirobot(message):
@@ -51,7 +55,13 @@ async def get_cat(message):
 
 
 def get_help():
-  return "try these commands:\na!help \na!hello \na!quote \na!say \na!shout \na!inspire \na!roast \nMore features coming soon!"
+  return "try these commands: \na!cat \na!hello \na!help \na!inspire \na!null \na!quote \na!roast \na!say \na!shout \nMore features coming soon!"
+
+
+def get_author(message):
+  my_author = str(message.author)
+  my_author = my_author[:len(my_author) - 5]
+  return my_author
 
 
 def get_quote():
@@ -63,30 +73,31 @@ def get_quote():
 
 
 def say_hello(message):
-    author = str(message.author)
-    author = author[:len(author) - 5]
+    my_author = get_author(message)
     greeting = random.choice(greetings).capitalize()
-    return greeting + ', ' + author + '!'
+    return greeting + ', ' + my_author + '!'
 
 
 def roast(message):
   """Returns an insult with a name attached from insult.mattbas.org."""
   insult = requests.get('https://insult.mattbas.org/api/insult').text
-  if message == '': 
+  my_content = message.content
+  if len(my_content) <= 7:
     return insult + "."
 
+  my_content = my_content[7:]
   name = ''
-  for char in message:
+  for char in my_content:
     if char != ' ':
       name += char
   ## "a!roast me" will roast the author instead of "Me"
   if name == 'me':
-    name = str(message.author)[:len(name) - 5]
+    name = get_author(message)
 
   if len(name) > 0:
     name = name[0].upper() + name[1:]
-  insult = name + ", you " + insult[4:]
-  return insult + "."
+
+  return name + ", you " + insult[4:] + "."
 
 
 def say(message, s):
@@ -128,15 +139,14 @@ async def on_message(message):
     elif message.content.startswith('a!inspire'):
       await get_inspirobot(message)
 
+    elif message.content.startswith('a!null'):
+      await bad_anal_joke(message, get_author(message))
+
     elif message.content.startswith('a!quote'):
       await message.channel.send(get_quote())
 
-    elif message.content.startswith('a!roast'):
-      if len(message.content) > 7:
-        insult = roast(message.content[7:])
-      else:
-        insult = roast('')
-      await message.channel.send(insult)
+    elif message.content.startswith('a!roast'): 
+      await message.channel.send(roast(message))
 
     elif message.content.startswith('a!say'):
       if len(message.content) > 5:
