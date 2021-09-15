@@ -13,10 +13,8 @@ from keep_alive import keep_alive
 
 client = discord.Client()
 
-
 bad_words = ['fuck', 'shit', 'bitch']
-greetings = ['hello', 'hi', 'greetings', 'hey']
-
+greetings = ['hello', 'hi', 'greetings', 'hey', 'yo']
 
 async def check_bad_words(message):
   """Sends a message if anyone says a word in the bad_words[] list."""
@@ -34,9 +32,26 @@ async def get_inspirobot(message):
   async with aiohttp.ClientSession() as session:
     async with session.get(my_url) as resp:
       if resp.status != 200:
-          return await message.channel.send('Could not download file...')
+          return await message.channel.send('Sorry, I couldn\'t download the file...')
       data = io.BytesIO(await resp.read())
       await message.channel.send(file = discord.File(data, 'inspirobot_image.png'))
+
+
+async def get_cat(message):
+  """Sends an image from TheCatApi."""
+  response = requests.get('https://api.thecatapi.com/v1/images/search')
+  json_data = json.loads(response.text)
+  my_url = json_data[0]['url']
+  async with aiohttp.ClientSession() as session:
+    async with session.get(my_url) as resp:
+      if resp.status != 200:
+          return await message.channel.send('Sorry, I couldn\'t download the file...')
+      data = io.BytesIO(await resp.read())
+      await message.channel.send(file = discord.File(data, 'cat_image.png'))
+
+
+def get_help():
+  return "try these commands:\na!help \na!hello \na!quote \na!say \na!shout \na!inspire \na!roast \nMore features coming soon!"
 
 
 def get_quote():
@@ -47,8 +62,11 @@ def get_quote():
   return quote
 
 
-def get_help():
-  return "try these commands:\na!help \na!hello \na!quote \na!say \na!shout \na!inspire \na!roast \nMore features coming soon!"
+def say_hello(message):
+    author = str(message.author)
+    author = author[:len(author) - 5]
+    greeting = random.choice(greetings).capitalize()
+    return greeting + ', ' + author + '!'
 
 
 def roast(message):
@@ -56,11 +74,18 @@ def roast(message):
   insult = requests.get('https://insult.mattbas.org/api/insult').text
   if message == '': 
     return insult + "."
+
   name = ''
   for char in message:
     if char != ' ':
       name += char
-  insult = name.capitalize() + ", you " + insult[4:]
+  ## "a!roast me" will roast the author instead of "Me"
+  if name == 'me':
+    name = str(message.author)[:len(name) - 5]
+
+  if len(name) > 0:
+    name = name[0].upper() + name[1:]
+  insult = name + ", you " + insult[4:]
   return insult + "."
 
 
@@ -85,37 +110,41 @@ async def on_message(message):
   if message.author.bot:
     return
 
+  ## always check for bad words
   await check_bad_words(message)
 
-  if message.content.startswith('a!hello'):
-    author = str(message.author)
-    author = author[:len(author) - 5]
-    greeting = random.choice(greetings).capitalize()
-    await message.channel.send(greeting + ', ' + author + '!')
+  ## check for command prefix
+  if message.content.startswith('a!'):
 
-  elif message.content.startswith('a!help'):
-    await message.channel.send(get_help())
+    if message.content.startswith('a!cat'):
+      await get_cat(message)
 
-  elif message.content.startswith('a!say'):
-    if len(message.content) > 5:
-      await say(message, message.content[5:])
+    elif message.content.startswith('a!hello'):
+      await message.channel.send(say_hello(message))
 
-  elif message.content.startswith('a!shout'):
-    if len(message.content) > 7:
-      await shout(message, message.content[7:])
+    elif message.content.startswith('a!help'):
+      await message.channel.send(get_help())
 
-  elif message.content.startswith('a!quote'):
-    await message.channel.send(get_quote())
+    elif message.content.startswith('a!inspire'):
+      await get_inspirobot(message)
 
-  elif message.content.startswith('a!roast'):
-    if len(message.content) > 7:
-      insult = roast(message.content[7:])
-    else:
-      insult = roast('')
-    await message.channel.send(insult)
+    elif message.content.startswith('a!quote'):
+      await message.channel.send(get_quote())
 
-  elif message.content.startswith('a!inspire'):
-    await get_inspirobot(message)
+    elif message.content.startswith('a!roast'):
+      if len(message.content) > 7:
+        insult = roast(message.content[7:])
+      else:
+        insult = roast('')
+      await message.channel.send(insult)
+
+    elif message.content.startswith('a!say'):
+      if len(message.content) > 5:
+        await say(message, message.content[5:])
+
+    elif message.content.startswith('a!shout'):
+      if len(message.content) > 7:
+        await shout(message, message.content[7:])
 
 
 keep_alive()
