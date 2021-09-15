@@ -13,6 +13,8 @@ from keep_alive import keep_alive
 
 client = discord.Client()
 
+
+command_prefix = 'a!'
 bad_words = ['fuck', 'shit', 'bitch']
 greetings = ['hello', 'hi', 'greetings', 'hey', 'yo']
 
@@ -125,34 +127,34 @@ async def on_message(message):
   await check_bad_words(message)
 
   ## check for command prefix
-  if message.content.startswith('a!'):
+  if message.content.startswith(command_prefix):
 
-    if message.content.startswith('a!cat'):
+    if message.content.startswith(command_prefix + 'cat'):
       await get_cat(message)
 
-    elif message.content.startswith('a!hello'):
+    elif message.content.startswith(command_prefix + 'hello'):
       await message.channel.send(say_hello(message))
 
-    elif message.content.startswith('a!help'):
+    elif message.content.startswith(command_prefix + 'help'):
       await message.channel.send(get_help())
 
-    elif message.content.startswith('a!inspire'):
+    elif message.content.startswith(command_prefix + 'inspire'):
       await get_inspirobot(message)
 
-    elif message.content.startswith('a!null'):
+    elif message.content.startswith(command_prefix + 'null'):
       await bad_anal_joke(message, get_author(message))
 
-    elif message.content.startswith('a!quote'):
+    elif message.content.startswith(command_prefix + 'quote'):
       await message.channel.send(get_quote())
 
-    elif message.content.startswith('a!roast'): 
+    elif message.content.startswith(command_prefix + 'roast'): 
       await message.channel.send(roast(message))
 
-    elif message.content.startswith('a!say'):
+    elif message.content.startswith(command_prefix + 'say'):
       if len(message.content) > 5:
         await say(message, message.content[5:])
 
-    elif message.content.startswith('a!shout'):
+    elif message.content.startswith(command_prefix + 'shout'):
       if len(message.content) > 7:
         await shout(message, message.content[7:])
 
