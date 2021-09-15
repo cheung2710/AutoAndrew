@@ -51,7 +51,7 @@ async def get_cat(message):
 
 
 def get_help():
-  return "try these commands:\na!help \na!hello \na!quote \na!say \na!shout \na!inspire \na!roast \nMore features coming soon!"
+  return "try these commands:\na!help \na!hello \na!quote \na!say \na!shout \na!inspire \na!cat \na!roast \nMore features coming soon!"
 
 
 def get_quote():
