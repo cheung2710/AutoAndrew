@@ -19,7 +19,7 @@ COMMAND_PREFIX = 'a!'
 
 
 @client.event
-async def on_ready():
+async def on_ready() -> None:
     print('We have logged in as {0.user}'.format(client))
     await client.change_presence(status = discord.Status.online, 
     activity = discord.Game("a!help"))
@@ -27,7 +27,7 @@ async def on_ready():
 
 
 @client.event
-async def on_message(message):
+async def on_message(message: discord.Message) -> None:
   """Contains all of the bot's responses to message events."""
   # ignore all other bots' messages
   if message.author.bot:
@@ -86,10 +86,10 @@ async def on_message(message):
           await shout(message, message.content[7:])
 
 
-def check_message_permissions(message):
+def check_message_permissions(message: discord.Message) -> bool:
   return message.member.guild.me.hasPermission(['SEND_MESSAGES'])
 
-def check_image_permissions(message):
+def check_image_permissions(message: discord.Message) ->bool:
   return message.member.guild.me.hasPermission(['ATTACH_FILES'])
 
 

@@ -1,10 +1,12 @@
+import discord
 from discord.ext import tasks
 from replit import db
+from annotations import Optional
 import time
 
 
 class ScheduledMessage:
-  def __init__(self, message):
+  def __init__(self, message: discord.Message):
     message_list = message.content.split()
     my_time = message_list[1].split(':')
     hour = my_time[0]
@@ -24,7 +26,7 @@ class ScheduledMessage:
     self.guild_snowflake = message.author.guild.id
 
 
-async def try_create_scheduled_message(message):
+async def try_create_scheduled_message(message: discord.Message) -> None:
   # The maximum number of messages we'll store is 10.
   if len(db.prefix("message")) > 10:
     await message.channel.send(
@@ -41,7 +43,7 @@ async def try_create_scheduled_message(message):
 
 
 @tasks.loop(seconds = 60)
-async def do_scheduled_messages(client):
+async def do_scheduled_messages(client: discord.Client) -> None:
   my_time = get_time()
   for key in db:
 
@@ -58,7 +60,8 @@ async def do_scheduled_messages(client):
         await my_channel.send(db[key][2])
 
 
-def get_channel(client, channel_id):
+def get_channel(client: discord.Client, 
+channel_id: int) -> Optional[discord.Channel]:
   for channel in client.get_all_channels():
     if channel.id == channel_id:
       return channel
@@ -78,14 +81,14 @@ def get_time() -> str:
   return hour, minute
 
 
-def add_scheduled_message_to_db(sm: ScheduledMessage):
+def add_scheduled_message_to_db(sm: ScheduledMessage) -> None:
   db["current_message_number"] += 1
   key = db["current_message_number"]
   key = "message" + str(key)
   db[key] = (sm.hour, sm.minute, sm.content, int(sm.channel.id), sm.guild_snowflake)
 
 
-def clear_all_scheduled_messages():
+def clear_all_scheduled_messages() -> None:
   messages = db.prefix("message")
   for message in messages:
     del db[message]
