@@ -1,3 +1,6 @@
+# main.py should call the function keep_alive() from here.
+# This will keep the server running.
+
 from flask import Flask
 from threading import Thread
 
