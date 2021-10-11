@@ -3,11 +3,10 @@
 
 import discord
 import os
-from replit import db
 
 from api_requests import get_cat, get_inspirobot, get_quote, get_roast
 from keep_alive import keep_alive
-from scheduled_message import (try_create_scheduled_message, do_scheduled_messages, clear_all_scheduled_messages)
+from scheduled_message import (try_create_scheduled_message, do_scheduled_messages, clear_guild_scheduled_messages)
 from small_bot_functions import (bad_anal_joke, check_bad_words, coinflip,
 get_help, say, say_hello, shout)
 
@@ -20,28 +19,37 @@ COMMAND_PREFIX = 'a!'
 
 @client.event
 async def on_ready() -> None:
-    print('We have logged in as {0.user}'.format(client))
-    await client.change_presence(status = discord.Status.online, 
-    activity = discord.Game("a!help"))
-    do_scheduled_messages.start(client)
+  """Contains the things the bot will do when it's launched."""
+  print('We have logged in as {0.user}'.format(client))
+  await client.change_presence(status = discord.Status.online, 
+  activity = discord.Game("a!help"))
+  do_scheduled_messages.start(client)
 
 
 @client.event
 async def on_message(message: discord.Message) -> None:
   """Contains all of the bot's responses to message events."""
-  # ignore all other bots' messages
+  # Ignores all bots' messages, including its own.
   if message.author.bot:
     return
 
-  # check each message for bad words
+  # Checks each message for bad words.
   await check_bad_words(message)
 
-  # check for command prefix
+  # Check for command prefix.
   if message.content.startswith(COMMAND_PREFIX):
   
     if message.content.startswith(COMMAND_PREFIX + 'cat'):
       if check_image_permissions(message):
         await get_cat(message)
+
+    elif message.content.startswith(COMMAND_PREFIX + 
+    'clearscheduledmessages'):
+      if check_message_permissions(message):
+        if clear_guild_scheduled_messages(message):
+          await message.channel.send("Messages deleted.")
+        else: 
+          await message.channel.send("No messages found.")
 
     elif message.content.startswith(COMMAND_PREFIX + 'coinflip'):
       if check_message_permissions(message):
@@ -89,13 +97,13 @@ async def on_message(message: discord.Message) -> None:
 
 
 def check_message_permissions(message: discord.Message) -> bool:
+  """Returns whether the bot has permission to send messages."""
   return message.author.guild_permissions.send_messages
 
 def check_image_permissions(message: discord.Message) ->bool:
+  """Returns whether the bot has permission to send images."""
   return message.author.guild_permissions.attach_files
 
 
 keep_alive()
-# clear_all_scheduled_messages()
-# print(db.keys())
 client.run(os.environ['DISCORD_BOT_KEY'])

@@ -34,8 +34,11 @@ class ScheduledMessage:
 
 
 async def try_create_scheduled_message(message: discord.Message) -> str:
+  """Attempts to create a ScheduledMessage object 
+  and add it to the replit db.
+  """
   # The maximum number of messages we'll store is 10.
-  if len(db.prefix("message")) > 10:
+  if len(db.prefix("message")) > 30:
     await message.channel.send(
       "Sorry, the maximum number of messages has been reached.")
 
@@ -51,7 +54,7 @@ async def try_create_scheduled_message(message: discord.Message) -> str:
 @tasks.loop(seconds = 60)
 async def do_scheduled_messages(client: discord.Client) -> None:
   my_time = get_time()
-  for key in db:
+  for key in db.prefix("message"):
     scheduled_message = get_scheduled_message_from_db(key)
     # Sends the scheduled message if it's the right time.
     if isinstance(scheduled_message, ScheduledMessage) and scheduled_message.hour == my_time[0] and scheduled_message.minute == my_time[1]:
@@ -60,7 +63,10 @@ async def do_scheduled_messages(client: discord.Client) -> None:
         await my_channel.send(scheduled_message.content)
 
 
-def get_channel(client: discord.Client, channel_id: int) -> Optional[discord.CategoryChannel]:
+def get_channel(client: discord.Client,
+channel_id: int) -> Optional[discord.CategoryChannel]:
+  """Returns a CategoryChannel object from a channel id. 
+  Returns None if the channel is not found."""
   for channel in client.get_all_channels():
     if channel.id == channel_id:
       return channel
@@ -68,6 +74,7 @@ def get_channel(client: discord.Client, channel_id: int) -> Optional[discord.Cat
 
 
 def get_time() -> tuple:
+  """Returns the current hour and minute in PST."""
   my_time = time.gmtime()
   # We'll use Pacific Standard Time for time inputs.
   hour = (my_time.tm_hour + 17) % 24
@@ -86,15 +93,32 @@ def add_scheduled_message_to_db(sm: ScheduledMessage) -> None:
 
 
 def get_scheduled_message_from_db(key: str) -> Optional[ScheduledMessage]:
+  """Gets a json string at db[key], then returns the ScheduledMessage 
+  object that it represents.
+  """
   value = db[key]
   if isinstance(value, str):
     return jsonpickle.decode(db[key])
   return None
 
 
+def clear_guild_scheduled_messages(message: discord.Message) -> bool:
+  """Deletes all messages created in the guild. 
+  Returns True if something was deleted, False otherwise.
+  """
+  for key in db.prefix("message"):
+    if (get_scheduled_message_from_db(key).guild_id == 
+    message.author.guild.id):
+      del db[key]
+      return True
+  return False
+
+
 def clear_all_scheduled_messages() -> None:
-  messages = db.prefix("message")
-  for message in messages:
+  """Removes scheduled messages in all guilds.
+  Use with caution.
+  """
+  for message in db.prefix("message"):
     del db[message]
   db["current_message_number"] = 1
   
