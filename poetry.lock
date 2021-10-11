@@ -112,6 +112,66 @@ docs = ["sphinx (==3.0.3)", "sphinxcontrib-trio (==1.1.2)", "sphinxcontrib-websu
 voice = ["PyNaCl (>=1.3.0,<1.5)"]
 
 [[package]]
+name = "django"
+version = "1.6.8"
+description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "django-ckeditor"
+version = "4.4.4"
+description = "Django admin CKEditor integration."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = "*"
+
+[[package]]
+name = "django-classy-tags"
+version = "0.4"
+description = "Class based template tags for Django"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = ">1.2"
+
+[[package]]
+name = "django-mptt"
+version = "0.6.0"
+description = "Utilities for implementing Modified Preorder Tree Traversal\n        with your Django Models and working with trees of Model instances."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = ">=1.4.2"
+
+[[package]]
+name = "django-sekizai"
+version = "0.7"
+description = "Django Sekizai"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+django-classy-tags = ">=0.3.1"
+
+[[package]]
+name = "djangorestframework"
+version = "3.1.0"
+description = "Web APIs for Django, made easy."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "flask"
 version = "2.0.1"
 description = "A simple framework for building complex web applications."
@@ -128,6 +188,17 @@ Werkzeug = ">=2.0"
 [package.extras]
 async = ["asgiref (>=3.2)"]
 dotenv = ["python-dotenv"]
+
+[[package]]
+name = "html5lib"
+version = "1.0b1"
+description = "HTML parser based on the WHATWG HTML specifcation"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = "*"
 
 [[package]]
 name = "idna"
@@ -160,6 +231,19 @@ MarkupSafe = ">=2.0"
 i18n = ["Babel (>=2.7)"]
 
 [[package]]
+name = "jsonpickle"
+version = "2.0.0"
+description = "Python library for serializing any arbitrary object graph into JSON"
+category = "main"
+optional = false
+python-versions = ">=2.7"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["coverage (<5)", "pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-black-multipy", "pytest-cov", "ecdsa", "feedparser", "numpy", "pandas", "pymongo", "sklearn", "sqlalchemy", "enum34", "jsonlib"]
+"testing.libs" = ["demjson", "simplejson", "ujson", "yajl"]
+
+[[package]]
 name = "markupsafe"
 version = "2.0.1"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -174,6 +258,36 @@ description = "multidict implementation"
 category = "main"
 optional = false
 python-versions = ">=3.6"
+
+[[package]]
+name = "pi-annotations"
+version = "0.1.0"
+description = "An app to create per-paragraph comments on content (created via Blogging App)"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = "1.6.8"
+djangorestframework = "3.1.0"
+pi-blogging = "0.1.0b1"
+
+[[package]]
+name = "pi-blogging"
+version = "0.1.0b1"
+description = "A Simple Blogging App that enables you to create content and content types from frontend itself."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = "1.6.8"
+django-ckeditor = "4.4.4"
+django-classy-tags = "0.4"
+django-mptt = "0.6"
+django-sekizai = "0.7"
+html5lib = "1.0b1"
+six = "1.3.0"
 
 [[package]]
 name = "replit"
@@ -207,6 +321,14 @@ urllib3 = ">=1.21.1,<1.27"
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
+
+[[package]]
+name = "six"
+version = "1.3.0"
+description = "Python 2 and 3 compatibility utilities"
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "typing-extensions"
@@ -255,7 +377,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "b2faf9b79bcf9fa2f4c03647d183ad9a433e707449ababa93765a1d757aed10b"
+content-hash = "a1dfa0c7ba88e0c810114c4cd6f6368a21affc2c35a98dc3974ad53c38d186f4"
 
 [metadata.files]
 aiohttp = [
@@ -333,9 +455,32 @@ discord = [
     {file = "discord.py-1.7.3-py3-none-any.whl", hash = "sha256:c6f64db136de0e18e090f6752ea68bdd4ab0a61b82dfe7acecefa22d6477bb0c"},
     {file = "discord.py-1.7.3.tar.gz", hash = "sha256:462cd0fe307aef8b29cbfa8dd613e548ae4b2cb581d46da9ac0d46fb6ea19408"},
 ]
+django = [
+    {file = "Django-1.6.8-py2.py3-none-any.whl", hash = "sha256:8a68c0e8beef56560e01eb0c734d8b969e64d38801e6d98bcae70bb836aa4c3f"},
+    {file = "Django-1.6.8.tar.gz", hash = "sha256:a8685c1fb5b0bcad9007d941c81493668f9613578add631f406d3f95b84cf6d0"},
+]
+django-ckeditor = [
+    {file = "django-ckeditor-4.4.4.tar.gz", hash = "sha256:45eb8b3de21981e79359e74b9575f7f54e428033b06bd9598b73f17528fb708e"},
+]
+django-classy-tags = [
+    {file = "django-classy-tags-0.4.tar.gz", hash = "sha256:6df0211e8c64d94673739bc880d0299c5c7d6c7659a62bcc406894891154a965"},
+]
+django-mptt = [
+    {file = "django-mptt-0.6.0.tar.gz", hash = "sha256:9478c151df5c80f7d27fb273f9a15e8bf3aa22d168b2bebf545fc63fec90e20e"},
+]
+django-sekizai = [
+    {file = "django-sekizai-0.7.tar.gz", hash = "sha256:24de5efd35705faea01298bed64c44c233ae723250c21bbd9102dba17b51bdbb"},
+]
+djangorestframework = [
+    {file = "djangorestframework-3.1.0-py2.py3-none-any.whl", hash = "sha256:7c54612fdc829e483cc5353fc6239965b0a4e3a22a9eb618c0900e8764200949"},
+    {file = "djangorestframework-3.1.0.tar.gz", hash = "sha256:db00da5cffd31d84e2babce515c55bda5392ee8d26f1d99f5da945b2c333aabe"},
+]
 flask = [
     {file = "Flask-2.0.1-py3-none-any.whl", hash = "sha256:a6209ca15eb63fc9385f38e452704113d679511d9574d09b2cf9183ae7d20dc9"},
     {file = "Flask-2.0.1.tar.gz", hash = "sha256:1c4c257b1892aec1398784c63791cbaa43062f1f7aeb555c4da961b20ee68f55"},
+]
+html5lib = [
+    {file = "html5lib-1.0b1.tar.gz", hash = "sha256:45b76286eda37652c83e246cd04ac64cd20137fced437a7ce5162f7f1393b922"},
 ]
 idna = [
     {file = "idna-3.2-py3-none-any.whl", hash = "sha256:14475042e284991034cb48e06f6851428fb14c4dc953acd9be9a5e95c7b6dd7a"},
@@ -348,6 +493,10 @@ itsdangerous = [
 jinja2 = [
     {file = "Jinja2-3.0.1-py3-none-any.whl", hash = "sha256:1f06f2da51e7b56b8f238affdd6b4e2c61e39598a378cc49345bc1bd42a978a4"},
     {file = "Jinja2-3.0.1.tar.gz", hash = "sha256:703f484b47a6af502e743c9122595cc812b0271f661722403114f71a79d0f5a4"},
+]
+jsonpickle = [
+    {file = "jsonpickle-2.0.0-py2.py3-none-any.whl", hash = "sha256:c1010994c1fbda87a48f8a56698605b598cb0fc6bb7e7927559fc1100e69aeac"},
+    {file = "jsonpickle-2.0.0.tar.gz", hash = "sha256:0be49cba80ea6f87a168aa8168d717d00c6ca07ba83df3cec32d3b30bfe6fb9a"},
 ]
 markupsafe = [
     {file = "MarkupSafe-2.0.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:d8446c54dc28c01e5a2dbac5a25f071f6653e6e40f3a8818e8b45d790fe6ef53"},
@@ -444,6 +593,12 @@ multidict = [
     {file = "multidict-5.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:7df80d07818b385f3129180369079bd6934cf70469f99daaebfac89dca288359"},
     {file = "multidict-5.1.0.tar.gz", hash = "sha256:25b4e5f22d3a37ddf3effc0710ba692cfc792c2b9edfb9c05aefe823256e84d5"},
 ]
+pi-annotations = [
+    {file = "pi-annotations-0.1.0.tar.gz", hash = "sha256:51a422b7989afa2fbde7f52029a5fae36fdaba3a8e7469e70cfe17c45800fcda"},
+]
+pi-blogging = [
+    {file = "pi-blogging-0.1.0b1.tar.gz", hash = "sha256:b6a9e469c47989c8fea7b3c0bc1c814aaa86c4407464f8953ffdcac1a80e96ef"},
+]
 replit = [
     {file = "replit-3.2.4-py3-none-any.whl", hash = "sha256:4fa5895e1e090ba23c179641bc88ab0486d1bea696515aa3147fce55733e29e1"},
     {file = "replit-3.2.4.tar.gz", hash = "sha256:39c660d57c479d321f143a04d75d1297accf24fc91c0113f56d6a279b20e9427"},
@@ -451,6 +606,9 @@ replit = [
 requests = [
     {file = "requests-2.26.0-py2.py3-none-any.whl", hash = "sha256:6c1246513ecd5ecd4528a0906f910e8f0f9c6b8ec72030dc9fd154dc1a6efd24"},
     {file = "requests-2.26.0.tar.gz", hash = "sha256:b8aa58f8cf793ffd8782d3d8cb19e66ef36f7aba4353eec859e74678b01b07a7"},
+]
+six = [
+    {file = "six-1.3.0.tar.gz", hash = "sha256:d59793f9b255bd00de800b97f9a50cce4fc8a44c205f7defa5bb7d691d13b852"},
 ]
 typing-extensions = [
     {file = "typing_extensions-3.10.0.2-py2-none-any.whl", hash = "sha256:d8226d10bc02a29bcc81df19a26e56a9647f8b0a6d4a83924139f4a8b01f17b7"},

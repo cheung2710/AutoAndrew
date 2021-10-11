@@ -78,7 +78,9 @@ async def on_message(message: discord.Message) -> None:
 
     elif message.content.startswith(COMMAND_PREFIX + 'scheduledmessage'):
       if check_message_permissions(message):
-        await try_create_scheduled_message(message)
+        my_message = await try_create_scheduled_message(message)
+        my_channel = message.channel
+        await my_channel.send(my_message)
 
     elif message.content.startswith(COMMAND_PREFIX + 'shout'):
       if check_message_permissions(message):
@@ -87,10 +89,10 @@ async def on_message(message: discord.Message) -> None:
 
 
 def check_message_permissions(message: discord.Message) -> bool:
-  return message.member.guild.me.hasPermission(['SEND_MESSAGES'])
+  return message.author.guild_permissions.send_messages
 
 def check_image_permissions(message: discord.Message) ->bool:
-  return message.member.guild.me.hasPermission(['ATTACH_FILES'])
+  return message.author.guild_permissions.attach_files
 
 
 keep_alive()

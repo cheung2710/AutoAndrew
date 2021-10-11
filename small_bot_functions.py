@@ -45,3 +45,4 @@ def say_hello(message: discord.Message) -> str:
 
 def shout(message: discord.Message, my_string: str) -> None:
   return message.channel.send(my_string.upper())
+  

@@ -1,32 +1,39 @@
+from typing import Optional
+
 import discord
 from discord.ext import tasks
 from replit import db
-from annotations import Optional
+
+import json
+import jsonpickle
+
 import time
 
 
 class ScheduledMessage:
-  def __init__(self, message: discord.Message):
-    message_list = message.content.split()
+  def __init__(self, my_message: discord.Message):
+    message_list = my_message.content.split()
     my_time = message_list[1].split(':')
-    hour = my_time[0]
-    if int(hour) < 10:
-      hour = '0' + hour
-    minute = my_time[1]
+    hour = int(my_time[0])
+    minute = int(my_time[1])
 
-    my_message = ''
+    my_content = ''
     for word in message_list[2:]:
-      my_message += word + ' '
-    my_message = my_message.strip()
+      my_content += word + ' '
+    my_content = my_content.strip()
 
-    self.hour = hour
-    self.minute = minute
-    self.content = my_message
-    self.channel = message.channel
-    self.guild_snowflake = message.author.guild.id
+    self.hour: int = hour
+    self.minute: int = minute
+    self.content: str = my_content
+    self.channel_id: int = my_message.channel.id
+    self.guild_id: int = my_message.author.guild.id
+
+  # ScheduledMessage objects will be stored in the replit db as json strings. This function makes the jsonpickle conversion work.
+  def to_json(self):
+    return json.dumps(self, indent = 4, default = lambda o: o.__dict__)
 
 
-async def try_create_scheduled_message(message: discord.Message) -> None:
+async def try_create_scheduled_message(message: discord.Message) -> str:
   # The maximum number of messages we'll store is 10.
   if len(db.prefix("message")) > 10:
     await message.channel.send(
@@ -34,58 +41,55 @@ async def try_create_scheduled_message(message: discord.Message) -> None:
 
   else:
     try:
-      sm = ScheduledMessage(message)
-      add_scheduled_message_to_db(sm)
-      await message.channel.send("Message logged.")
+      add_scheduled_message_to_db(ScheduledMessage(message))
+      return "Message logged."
 
     except IndexError:
-      await message.channel.send("Please type the command like this: \na!scheduledmessage [time in UTC] [message] \nFor example: \na!scheduledmessage 23:30 Pee-pee before slee-pee!")
+      return "Please type the command like this: \na!scheduledmessage [time in PST] [message] \nFor example: \na!scheduledmessage 23:30 Pee-pee before slee-pee!"
 
 
 @tasks.loop(seconds = 60)
 async def do_scheduled_messages(client: discord.Client) -> None:
   my_time = get_time()
   for key in db:
-
-    try: 
-      is_iterable = db[key][0]
-      is_iterable = True
-    except TypeError:
-      is_iterable = False
-
-    # checks if the hours and minutes match
-    if is_iterable and db[key][0] == my_time[0] and db[key][1] == my_time[1]:
-      my_channel = get_channel(client, db[key][3])
+    scheduled_message = get_scheduled_message_from_db(key)
+    # Sends the scheduled message if it's the right time.
+    if isinstance(scheduled_message, ScheduledMessage) and scheduled_message.hour == my_time[0] and scheduled_message.minute == my_time[1]:
+      my_channel = get_channel(client, scheduled_message.channel_id)
       if my_channel is not None:
-        await my_channel.send(db[key][2])
+        await my_channel.send(scheduled_message.content)
 
 
-def get_channel(client: discord.Client, 
-channel_id: int) -> Optional[discord.Channel]:
+def get_channel(client: discord.Client, channel_id: int) -> Optional[discord.CategoryChannel]:
   for channel in client.get_all_channels():
     if channel.id == channel_id:
       return channel
   return None
 
 
-def get_time() -> str:
+def get_time() -> tuple:
   my_time = time.gmtime()
-  # using Pacific Standard Time for inputs
-  hour = str((my_time.tm_hour + 17) % 24)
-  if int(hour) < 10:
-    hour = "0" + hour
-  minute = str(my_time.tm_min)
-  if int(minute) < 10:
-    minute = "0" + minute
+  # We'll use Pacific Standard Time for time inputs.
+  hour = (my_time.tm_hour + 17) % 24
+  minute = my_time.tm_min
 
   return hour, minute
 
 
 def add_scheduled_message_to_db(sm: ScheduledMessage) -> None:
   db["current_message_number"] += 1
-  key = db["current_message_number"]
-  key = "message" + str(key)
-  db[key] = (sm.hour, sm.minute, sm.content, int(sm.channel.id), sm.guild_snowflake)
+  key = str(db["current_message_number"])
+  key = "message" + key
+
+  sm_encoded = jsonpickle.encode(sm, unpicklable = True)
+  db[key] = sm_encoded
+
+
+def get_scheduled_message_from_db(key: str) -> Optional[ScheduledMessage]:
+  value = db[key]
+  if isinstance(value, str):
+    return jsonpickle.decode(db[key])
+  return None
 
 
 def clear_all_scheduled_messages() -> None:
@@ -93,3 +97,4 @@ def clear_all_scheduled_messages() -> None:
   for message in messages:
     del db[message]
   db["current_message_number"] = 1
+  
