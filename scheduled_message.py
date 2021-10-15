@@ -37,8 +37,8 @@ async def try_create_scheduled_message(message: discord.Message) -> str:
   """Attempts to create a ScheduledMessage object 
   and add it to the replit db.
   """
-  # The maximum number of messages we'll store is 10.
-  if len(db.prefix("message")) > 30:
+  # The maximum number of messages we'll store is 20.
+  if len(db.prefix("message")) > 20:
     await message.channel.send(
       "Sorry, the maximum number of messages has been reached.")
 

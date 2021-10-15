@@ -44,26 +44,20 @@ def get_quote() -> str:
   """Returns an inspirational quote from zenquotes.io."""
   response = requests.get('https://zenquotes.io/api/random')
   json_data = json.loads(response.text)
-  quote = json_data[0]['q'] + "\n--" + json_data[0]['a']
-  return quote
+  return json_data[0]['q'] + "\n--" + json_data[0]['a']
 
 def get_roast(message: discord.Message) -> str:
   """Returns an insult with a name attached from insult.mattbas.org."""
   insult = requests.get('https://insult.mattbas.org/api/insult').text
-  my_content = message.content
-  if len(my_content) <= 7:
+  if len(message.content) <= 7:
     return insult + "."
 
-  my_content = my_content[7:]
-  name = ''
-  for char in my_content:
-    if char != ' ':
-      name += char
+  name = message.content[7:]
   # "a!roast me" will roast the author instead of "Me"
   if name == 'me':
     name = get_author(message)
 
-  if len(name) > 0:
-    name = name[0].upper() + name[1:]
-
-  return name + ", you " + insult[4:] + "."
+  name = name.strip().split()
+  for i in range(len(name)):
+    name[i] = name[i].capitalize()
+  return ' '.join(name) + ", you " + insult[4:] + "."
