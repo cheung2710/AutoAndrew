@@ -54,10 +54,12 @@ def get_roast(message: discord.Message) -> str:
 
   name = message.content[7:]
   # "a!roast me" will roast the author instead of "Me"
-  if name == 'me':
+  if name.strip() == 'me':
     name = get_author(message)
 
   name = name.strip().split()
-  for i in range(len(name)):
-    name[i] = name[i].capitalize()
+  # capitalizes all words if there's more than one word
+  if len(name) > 1:
+    for i in range(len(name)):
+      name[i] = name[i].capitalize()
   return ' '.join(name) + ", you " + insult[4:] + "."

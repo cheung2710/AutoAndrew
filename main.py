@@ -1,7 +1,6 @@
 # documentation: 
 # https://docs.google.com/document/d/1MCxDtjRRnO61RX7Chbed5VbXZOBBWARwsXb7EAhrn1U/edit
 
-
 import discord
 import os
 # from replit import db
@@ -15,8 +14,6 @@ get_help, say, say_hello, shout)
 
 
 client = discord.Client()
-
-
 COMMAND_PREFIX = 'a!'
 
 
@@ -35,9 +32,6 @@ async def on_message(message: discord.Message) -> None:
   # Ignores all bots' messages, including its own.
   if message.author.bot:
     return
-
-  # Checks each message for bad words.
-  await check_banned_words(message)
 
   # Check for command prefix.
   if message.content.startswith(COMMAND_PREFIX):
@@ -83,7 +77,7 @@ async def on_message(message: discord.Message) -> None:
       if len(message.content) > 5:
         await say(message, message.content[5:])
 
-    elif message.content.startswith(COMMAND_PREFIX + 'scheduledmessage'):
+    elif message.content.startswith(COMMAND_PREFIX + 'schedulemessage'):
       my_message = await try_create_scheduled_message(message)
       my_channel = message.channel
       await my_channel.send(my_message)
@@ -94,6 +88,10 @@ async def on_message(message: discord.Message) -> None:
 
     elif message.content.startswith(COMMAND_PREFIX + 'unban'):
       await remove_banned_word(message)
+
+  # Checks each message for bad words if it wasn't part of a command.
+  else:
+    await check_banned_words(message)
 
 
 keep_alive()

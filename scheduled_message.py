@@ -48,7 +48,7 @@ async def try_create_scheduled_message(message: discord.Message) -> str:
       return "Message logged."
 
     except IndexError:
-      return "Please type the command like this: \na!scheduledmessage [time in PST] [message] \nFor example: \na!scheduledmessage 23:30 Pee-pee before slee-pee!"
+      return "Please see the documentation for how to create scheduled messages: \nhttps://docs.google.com/document/d/1MCxDtjRRnO61RX7Chbed5VbXZOBBWARwsXb7EAhrn1U/edit"
 
 
 @tasks.loop(seconds = 60)

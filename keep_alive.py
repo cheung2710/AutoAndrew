@@ -1,5 +1,4 @@
-# main.py should call the function keep_alive() from here.
-# This will keep the server running.
+# This magically keeps the replit server running. Don't ask.
 
 from flask import Flask
 from threading import Thread
