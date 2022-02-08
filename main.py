@@ -1,5 +1,4 @@
-# documentation: 
-# https://docs.google.com/document/d/1MCxDtjRRnO61RX7Chbed5VbXZOBBWARwsXb7EAhrn1U/edit
+# documentation: https://docs.google.com/document/d/1MCxDtjRRnO61RX7Chbed5VbXZOBBWARwsXb7EAhrn1U/edit
 
 import discord
 import os
